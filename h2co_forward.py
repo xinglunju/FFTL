@@ -42,7 +42,7 @@ def __h2co_init__():
 	h2co_info['Km1'] = [0, 2, 2] # K_{-1}
 	h2co_info['E'] = [10.4834, 57.6086, 57.6120] # Upper level energy (K)
 	h2co_info['frest'] = [218.22219, 218.47563, 218.76007] # Rest frequencies (GHz)
-	h2co_info['gk'] = [1./4, 2./4, 2./4] # Degeneracy = g_K*g_nuclear
+	h2co_info['gk'] = [1./4, 1./4, 1./4] # Degeneracy = g_K*g_nuclear
 	h2co_info['mu'] = 2.3317e-18 # Permanent dipole moment (esu*cm)
 	h2co_info['A'] = 281.97056 # Rotational constant (GHz)
 	h2co_info['B'] = 38.83399 # Another rotational constant (GHz)
@@ -196,7 +196,7 @@ def fit_spec(spec, faxis, Jupp=3, cutoff=0.009, varyf=2, interactive=True, mode=
 		if vlsr1 != 0:
 			params.add('Ntot', value=1e15, min=0, max=1e25)
 			params.add('T', value=100, min=10)
-			params.add('sigma', value=0.00156, vary=False)
+			params.add('sigma', value=0.00156, min=0, max=0.050)
 			#params.add('sigma', value=0.0027, min=0, max=0.050)
 			if varyf > 0:
 				params.add('fsky', value=fsky_init, min=fsky_init-varyf*chanwidth, \
@@ -247,8 +247,8 @@ h2co_info = __h2co_init__()
 
 # Read the ASCII file.
 # The frequency axis is assumed to be in GHz, and the y axis is T_B in K.
-spec, faxis = __readascii__('core3p1.txt')
-sourcename = 'mm3p1'
+spec, faxis = __readascii__('core2p1.txt')
+sourcename = 'mm2p1'
 chanwidth = abs(faxis[0] - faxis[-1]) / len(faxis)
 print 'Channel width is %.4f GHz' % chanwidth
 print 'Channel number is %d' % len(faxis)
