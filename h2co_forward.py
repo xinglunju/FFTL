@@ -42,7 +42,7 @@ def __h2co_init__():
 	h2co_info['Km1'] = [0, 2, 2] # K_{-1}
 	h2co_info['E'] = [10.4834, 57.6086, 57.6120] # Upper level energy (K)
 	h2co_info['frest'] = [218.22219, 218.47563, 218.76007] # Rest frequencies (GHz)
-	h2co_info['gk'] = [1./4, 1./4, 1./4] # Degeneracy = g_K*g_nuclear
+	h2co_info['gk'] = [1./4, 2./4, 2./4] # Degeneracy = g_K*g_nuclear
 	h2co_info['mu'] = 2.3317e-18 # Permanent dipole moment (esu*cm)
 	h2co_info['A'] = 281.97056 # Rotational constant (GHz)
 	h2co_info['B'] = 38.83399 # Another rotational constant (GHz)
@@ -60,12 +60,13 @@ def __gauss_tau__(axis,p):
 
 	phijk = 1/sqrt(2 * pi) / (sigma * 1e9) * np.exp(-0.5 * (axis - fsky)**2 / sigma**2)
 	Ajk = (64 * pi**4 * (h2co_info['frest'][Lid] * 1e9)**3 * h2co_info['mu']**2 / 3 / h / c**3) * (J**2 - K**2) / (J * (2*J + 1))
-	gjk = (2*J + 1) * h2co_info['gk'][K]
+	gjk = (2*J + 1) * h2co_info['gk'][Lid]
 	#Q = 3.89 * T**1.5 / (-1.0 * expm1(-524.8 / T))**2
-	Q = 168.7 * T**1.5 / sqrt(h2co_info['A'] * h2co_info['B'] * h2co_info['C'])
-	Njk = Ntot * (gjk / Q) * exp(-1.0 * h2co_info['E'][K] / T)
+	# Partition function using Mangum & Shirley 2015 Equ (58)
+	Q = 168.7 * T**1.5 / sqrt(h2co_info['A'] * h2co_info['B'] * h2co_info['C']) / 2.
+	Njk = Ntot * (gjk / Q) * exp(-1.0 * h2co_info['E'][Lid] / T)
 
-	tau = (h * c**2 * Njk * Ajk) / (8 * pi * h2co_info['frest'][K] * 1e9 * k_B * T) * phijk
+	tau = (h * c**2 * Njk * Ajk) / (8 * pi * h2co_info['frest'][Lid] * 1e9 * k_B * T) * phijk
 	f = T * (1 - np.exp(-1.0 * tau))	
 
 	return f
@@ -96,7 +97,7 @@ def onclick(event):
 
 def fit_spec(spec, faxis, Jupp=3, cutoff=0.009, varyf=2, interactive=True, mode='single'):
 	"""
-	Fit the hyperfine lines of CH3CN, derive best-fitted Trot and Ntot.
+	Fit the H2CO triple lines, derive best-fitted Trot and Ntot.
 	Input:
 		spec: the spectra
 		faxis: the frequency axis
@@ -247,14 +248,14 @@ h2co_info = __h2co_init__()
 
 # Read the ASCII file.
 # The frequency axis is assumed to be in GHz, and the y axis is T_B in K.
-spec, faxis = __readascii__('core2p1.txt')
-sourcename = 'mm2p1'
+spec, faxis = __readascii__('C4P1.txt')
+sourcename = 'C20kms C4P1'
 chanwidth = abs(faxis[0] - faxis[-1]) / len(faxis)
 print 'Channel width is %.4f GHz' % chanwidth
 print 'Channel number is %d' % len(faxis)
 
 # Convert from Jy/beam to K:
-spec = 1.224e6 * spec / (h2co_info['frest'][0])**2 / (1.06 * 0.76)
+#spec = 1.224e6 * spec / (h2co_info['frest'][0])**2 / (5.07 * 3.03)
 
 # Reverse the axis:
 #spec = spec[::-1]
