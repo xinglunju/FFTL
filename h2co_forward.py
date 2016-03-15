@@ -40,7 +40,8 @@ def __h2co_init__():
 	"""
 	h2co_info = {}
 	h2co_info['Km1'] = [0, 2, 2] # K_{-1}
-	h2co_info['E'] = [10.4834, 57.6086, 57.6120] # Upper level energy (K)
+	# Note that the energies listed on splatalogue are for lower levels...
+	h2co_info['E'] = [20.9566, 68.0945, 68.1115] # Upper level energy (K)
 	h2co_info['frest'] = [218.22219, 218.47563, 218.76007] # Rest frequencies (GHz)
 	h2co_info['gk'] = [1./4, 2./4, 2./4] # Degeneracy = g_K*g_nuclear
 	h2co_info['mu'] = 2.3317e-18 # Permanent dipole moment (esu*cm)
@@ -58,7 +59,7 @@ def __gauss_tau__(axis,p):
 	T= p[0]; Ntot = p[1]; fsky = p[2]; sigma = p[3]; Lid = p[4]
 	K = h2co_info['Km1'][Lid]
 
-	sigmav = c*sigma/ch3cn_info['frest'][0]
+	sigmav = c*sigma/h2co_info['frest'][0]
 	# sigmav in the equation below must be in unit of cm/s!!!
 	phijk = 1/sqrt(2 * pi) / (sigmav) * np.exp(-0.5 * (axis - fsky)**2 / sigma**2)
 	Ajk = (64 * pi**4 * (h2co_info['frest'][Lid] * 1e9)**3 * h2co_info['mu']**2 / 3 / h / c**3) * (J**2 - K**2) / (J * (2*J + 1))
@@ -203,7 +204,8 @@ def fit_spec(spec, faxis, Jupp=3, cutoff=0.009, varyf=2, interactive=True, mode=
 			#params.add('sigma', value=0.0027, min=0, max=0.050)
 			if varyf > 0:
 				params.add('fsky', value=fsky_init, min=fsky_init-varyf*chanwidth, \
-				max=fsky0_init+varyf*chanwidth)
+				max=fsky_init+varyf*chanwidth)
+				print "Vary the peak..."
 			elif varyf == 0:
 				params.add('fsky', value=fsky_init, vary=False)
 		if vlsr2 != 0:
@@ -264,7 +266,7 @@ print 'Channel number is %d' % len(faxis)
 #faxis = faxis[::-1]
 
 # Run the fitting:
-fit_spec(spec, faxis, Jupp=3, cutoff=0.1, varyf=0, interactive=True, mode='single')
+fit_spec(spec, faxis, Jupp=3, cutoff=0.1, varyf=3, interactive=True, mode='single')
 
 
 elapsed = (time.clock() - start)
