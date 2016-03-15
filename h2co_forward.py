@@ -58,7 +58,9 @@ def __gauss_tau__(axis,p):
 	T= p[0]; Ntot = p[1]; fsky = p[2]; sigma = p[3]; Lid = p[4]
 	K = h2co_info['Km1'][Lid]
 
-	phijk = 1/sqrt(2 * pi) / (sigma * 1e9) * np.exp(-0.5 * (axis - fsky)**2 / sigma**2)
+	sigmav = c*sigma/ch3cn_info['frest'][0]
+	# sigmav in the equation below must be in unit of cm/s!!!
+	phijk = 1/sqrt(2 * pi) / (sigmav) * np.exp(-0.5 * (axis - fsky)**2 / sigma**2)
 	Ajk = (64 * pi**4 * (h2co_info['frest'][Lid] * 1e9)**3 * h2co_info['mu']**2 / 3 / h / c**3) * (J**2 - K**2) / (J * (2*J + 1))
 	gjk = (2*J + 1) * h2co_info['gk'][Lid]
 	#Q = 3.89 * T**1.5 / (-1.0 * expm1(-524.8 / T))**2
@@ -248,8 +250,8 @@ h2co_info = __h2co_init__()
 
 # Read the ASCII file.
 # The frequency axis is assumed to be in GHz, and the y axis is T_B in K.
-spec, faxis = __readascii__('C4P1.txt')
-sourcename = 'C20kms C4P1'
+spec, faxis = __readascii__('c_h2co.txt')
+sourcename = 'G0.380'
 chanwidth = abs(faxis[0] - faxis[-1]) / len(faxis)
 print 'Channel width is %.4f GHz' % chanwidth
 print 'Channel number is %d' % len(faxis)
