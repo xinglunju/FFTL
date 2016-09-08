@@ -43,7 +43,7 @@ def __h2co_init__():
 	# Note that the energies listed on splatalogue are for lower levels...
 	h2co_info['E'] = [20.9566, 68.0945, 68.1115] # Upper level energy (K)
 	h2co_info['frest'] = [218.22219, 218.47563, 218.76007] # Rest frequencies (GHz)
-	h2co_info['gk'] = [1./4, 2./4, 2./4] # Degeneracy = g_K*g_nuclear
+	h2co_info['gk'] = [1./4, 1./4, 1./4] # Degeneracy = g_K*g_nuclear
 	h2co_info['mu'] = 2.3317e-18 # Permanent dipole moment (esu*cm)
 	h2co_info['A'] = 281.97056 # Rotational constant (GHz)
 	h2co_info['B'] = 38.83399 # Another rotational constant (GHz)
@@ -205,7 +205,6 @@ def fit_spec(spec, faxis, Jupp=3, cutoff=0.009, varyf=2, interactive=True, mode=
 			if varyf > 0:
 				params.add('fsky', value=fsky_init, min=fsky_init-varyf*chanwidth, \
 				max=fsky_init+varyf*chanwidth)
-				print "Vary the peak..."
 			elif varyf == 0:
 				params.add('fsky', value=fsky_init, vary=False)
 		if vlsr2 != 0:
@@ -228,9 +227,9 @@ def fit_spec(spec, faxis, Jupp=3, cutoff=0.009, varyf=2, interactive=True, mode=
 			if vlsr1 != 0 and vlsr2 != 0:
 				print 'Reserved for two-component fitting.'
 			elif vlsr1 != 0 or vlsr2 != 0:
-				plt.text(0.02, 0.80, r'T$_{rot}$=%.1f($\pm$%.1f) K' % (params['T'].value,params['T'].stderr), transform=ax.transAxes, color='r', fontsize=15)
-				plt.text(0.02, 0.75, r'N$_{tot}$=%.2e($\pm$%.2e) cm$^{-2}$' % (params['Ntot'].value,params['Ntot'].stderr), transform=ax.transAxes, color='r', fontsize=15)
-				plt.text(0.02, 0.70, r'FWHM=%.2f($\pm$%.2f) km/s' % (c*params['sigma'].value/h2co_info['frest'][0]/1e5*2.355,c*params['sigma'].stderr/h2co_info['frest'][0]/1e5*2.355), transform=ax.transAxes, color='r', fontsize=15)
+				plt.text(0.02, 0.80, r'T$_{rot}$=%.1f($\pm$%.1f) K' % (result.params['T'].value,result.params['T'].stderr), transform=ax.transAxes, color='r', fontsize=15)
+				plt.text(0.02, 0.75, r'N$_{tot}$=%.2e($\pm$%.2e) cm$^{-2}$' % (result.params['Ntot'].value,result.params['Ntot'].stderr), transform=ax.transAxes, color='r', fontsize=15)
+				plt.text(0.02, 0.70, r'FWHM=%.2f($\pm$%.2f) km/s' % (c*result.params['sigma'].value/h2co_info['frest'][0]/1e5*2.355,c*result.params['sigma'].stderr/h2co_info['frest'][0]/1e5*2.355), transform=ax.transAxes, color='r', fontsize=15)
 			plt.legend()
 			plt.show()
 			print 'Is the fitting ok? y/n'
